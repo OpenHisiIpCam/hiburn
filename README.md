@@ -17,6 +17,13 @@
 
 ## :eyeglasses: About <a name="about"></a>
 
+This is U-Boot interaction automation utility. Main function is kernel, rootfs RAM upload and starting system.
+This can be useful during development in cases, when you have to repeat reset-upload-start cycle many times.
+
+Basicly tool catches U-Boot prompt, inputs commands to tune net, set kernel bootargs, start kernel. 
+Also there are hooks that allow tool control power of the target device using some other hardware 
+(see (Typical scenario->Remote debug facility](#remote_debug_facility) for details).
+
 ## :cd: Installation <a name="installation"></a>
 
 The tool is written on python3 and needs (obviously) python3 as well as a few packages from PyPI.
@@ -59,3 +66,7 @@ Action:
 ```
 
 ## :file_folder: Typical scenario <a name="typical_scenario"></a>
+
+### Manual operation <a name="manual_operation"></a>
+
+### Remote debug facility <a name="remote_debug_facility"></a>
