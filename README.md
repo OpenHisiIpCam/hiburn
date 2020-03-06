@@ -22,7 +22,7 @@ This can be useful during development in cases, when you have to repeat reset-up
 
 Basicly tool catches U-Boot prompt, inputs commands to tune net, set kernel bootargs, start kernel. 
 Also there are hooks that allow tool control power of the target device using some other hardware 
-(see (Typical scenario->Remote debug facility](#remote_debug_facility) for details).
+(see [Typical scenario->Remote debug facility](#remote_debug_facility) for details).
 
 ## :cd: Installation <a name="installation"></a>
 
