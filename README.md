@@ -13,28 +13,31 @@
 - [About](#about)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Typical scenario](#typical_scenario)
+- [Typical scenarios](#typical_scenarios)
 
 ## :eyeglasses: About <a name="about"></a>
 
 This is U-Boot interaction automation utility. Main function is kernel, rootfs RAM upload and starting system.
 This can be useful during development in cases, when you have to repeat reset-upload-start cycle many times.
 
-Basicly tool catches U-Boot prompt, inputs commands to tune net, set kernel bootargs, start kernel. 
-Also there are hooks that allow tool control power of the target device using some other hardware 
-(see [Typical scenario->Remote debug facility](#remote_debug_facility) for details).
+Basicly, tool catches U-Boot prompt, inputs commands to tune net, set kernel bootargs, start kernel.
+U-Boot operates on eraly stage of device boot process, right after power on, so 
+HiBurn accepts manual and auto modes for target device reset, 
+see [typical scenarios](#typical scenarios) section for details.
 
 ## :cd: Installation <a name="installation"></a>
 
-The tool is written on python3 and needs (obviously) python3 as well as a few packages from PyPI.
+The tool is written on python3 and needs (obviously) python3 as well, as a few packages from PyPI.
 
-Assuming you are on some deb base GNU/Linux (like Debian or Ubuntu), you can satusfy deps following way:
+Assuming you are on some deb base GNU/Linux (like Debian or Ubuntu), you can satisfy deps following way:
 ```console 
-foo@bar:~$ sudo apt-get install python3-serial python3-pip
+foo@bar:~$ sudo apt-get install python3 python3-serial python3-pip
 foo@bar:~$ sudo pip3 install tftpy
 ```
 
 ## :hammer: Usage <a name="usage"></a>
+
+**TODO**
 
 ```console
 foo@bar:~/hiburn$ ./burner.py --help
@@ -65,8 +68,38 @@ Action:
     spi-dump            Dump SPI-Flash content
 ```
 
-## :file_folder: Typical scenario <a name="typical_scenario"></a>
+## :file_folder: Typical scenario <a name="typical_scenarios"></a>
 
 ### Manual operation <a name="manual_operation"></a>
 
+This is typical scenario when everything is on your table.
+
+![Manual schema](TODO_IMAGE)
+
+```shell
+TODO sample hiburn invoke
+```
+
 ### Remote debug facility <a name="remote_debug_facility"></a>
+
+> This method is justified only in the case of frequent experiments 
+> or remote debugging, as it will require additional hardware.
+
+Idea is to automate device power control.  
+This can be done DIY electronics like Arduino.
+
+![Arduino schema](TODO_IMAGE)
+
+Or find something like USB Relay (complete device that allow relay to be controlled via usb HID).
+
+![USB Relay schema](TODO_IMAGE)
+
+
+```shell
+TODO sample power control script
+TODO sample hiburn invoke
+```
+
+
+
+
