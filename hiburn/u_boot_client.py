@@ -21,7 +21,6 @@ class UBootClient:
         if line:
             logging.debug("<< {}".format(line))
         return line.decode(ENCODING, errors="replace").rstrip("\r\n")
-        
 
     def _write(self, data):
         if isinstance(data, str):
@@ -30,13 +29,14 @@ class UBootClient:
         logging.debug(">> {}".format(data))
 
     def fetch_console(self):
-        """ Wait for running U-Boot and try to stop its' defautl laoding process
+        """ Wait for running U-Boot and try to enter console mode
         """
+
         self.s.reset_input_buffer()
 
         logging.debug("Wait for U-Boot printable output...")
         self.s.timeout = None
-        while self._readline().isprintable():
+        while not self._readline().isprintable():
             pass
 
         logging.debug("Wait for prompt...")
