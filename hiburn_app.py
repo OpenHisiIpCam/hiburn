@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import logging
 import argparse
+import ipaddress
 from hiburn.u_boot_client import UBootClient
 from hiburn.config import add_arguments_from_config, get_config_from_args
 
@@ -11,10 +12,19 @@ DEFAULT_CONFIG = {
         "baudrate": 115200
     },
     "net": {
-        "target": "192.168.1.100",
-        "host": "192.168.1.1/24"
+        "target": ipaddress.IPv4Address("192.168.10.101"),
+        "host": ipaddress.IPv4Interface("192.168.10.2/24")
     }
 }
+
+
+def upload(client: UBootClient, config):
+    # 1. set network parameters
+    client.setenv(
+        ipaddr=config["net"]["target"],
+        netmask=config["net"]["host"].netmask,
+        serverip=config["net"]["host"].ip
+    )
 
 
 def main():
@@ -40,6 +50,8 @@ def main():
 
     client.fetch_console()
 
+    print("\n".join(client.printenv()))
+    upload(client, config)
     print("\n".join(client.printenv()))
 
 

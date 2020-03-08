@@ -84,8 +84,9 @@ class UBootClient:
 
     def setenv(self, **kwargs):
         for k, v in kwargs.items():
-            v = v.replace(";", "\;")
-            self.write_command("setenv {} {}".format(k, v))
+            sv = str(v)
+            sv = sv.replace(";", "\;")
+            self.write_command("setenv {} {}".format(k, sv))
 
     def tftp(self, offset, file_name):
         self.write_command("tftp {:#x} {}".format(offset, file_name))
