@@ -21,10 +21,14 @@ DEFAULT_CONFIG_DESC = {
         "target": ("192.168.10.101", str, "Target IP address"),
         "host": ("192.168.10.2/24", str, "Host IP address and mask's length")
     },
-    "memory": {
+    "mem": {
         "base_addr": (0x82000000, utils.hsize2int, "Base RAM address"),
-        "block_size": ("64K", utils.hsize2int, "Memory block size")
-    }
+        "block_size": ("64K", utils.hsize2int, "Memory block size"),
+        "initrd_size": ("16M", utils.hsize2int, "Amount of RAM for initrd"),
+        "linux_size": ("256M", utils.hsize2int, "Amount of RAM for Linux"),
+        "uboot_size": ("512K", utils.hsize2int, ""),
+    },
+    "linux_console": ("ttyAMA0,115200", str, "Linux load console")
 }
 
 
@@ -56,14 +60,15 @@ def main():
         help="Print debug output"
     )
     parser.add_argument("--no-fetch", "-n", action="store_true",
-        help="Assume U-Boot's consoel is already fetched"
+        help="Assume U-Boot's console is already fetched"
     )
     add_arguments_from_config_desc(parser, DEFAULT_CONFIG_DESC)
     actions.add_actions(parser,
+        actions.printenv,
         actions.ping,
         actions.download,
-        actions.printenv,
-        actions.upload
+        actions.upload,
+        actions.boot
     )
 
     args = parser.parse_args()
@@ -84,7 +89,7 @@ def main():
     if hasattr(args, "action"):
         args.action(client, config, args)
     else:
-        print("U-Boot console is fetched")
+        print("Nothing to do here...")
 
 
 if __name__ == "__main__":

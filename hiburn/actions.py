@@ -1,5 +1,6 @@
 import logging
 import ipaddress
+import os
 from . import utils
 
 
@@ -35,6 +36,9 @@ class Action:
             netmask=self.host_ip_interface.netmask,
             serverip=self.host_ip_interface.ip
         )
+    
+    def upload_files(self, *args):
+        utils.upload_files_via_tftp(self.client, args, listen_ip=str(self.host_ip_interface.ip))
 
 
 def add_actions(parser, *actions):
@@ -84,6 +88,7 @@ class download(Action):
         ), listen_ip=str(self.host_ip_interface.ip))
 
 
+# -------------------------------------------------------------------------------------------------
 class upload(Action):
     """ Upload data to device's memory via TFTP
     """
@@ -94,6 +99,39 @@ class upload(Action):
 
     def run(self, args):
         self.configure_network()
-        utils.upload_files_via_tftp(self.client, (
-            (args.src, args.addr),
-        ), listen_ip=str(self.host_ip_interface.ip))
+        self.upload_files((args.src, args.addr))
+
+
+# -------------------------------------------------------------------------------------------------
+class boot(Action):
+    """ Upload Kernel and RootFS images to device and boot using them
+    """
+    @classmethod
+    def add_arguments(cls, parser):
+        parser.add_argument("--uimage", type=str, required=True, help="Kernel UImage file")
+        parser.add_argument("--rootfs", type=str, required=True, help="RootFS image file")
+    
+    def run(self, args):
+        BLOCK_SIZE = self.config["mem"]["block_size"]
+        BASE_ADDR = self.config["mem"]["base_addr"]
+
+        self.configure_network()
+
+        uimage_addr = BASE_ADDR
+        rootfs_addr = utils.aligned_address(BLOCK_SIZE, uimage_addr + os.path.getsize(args.uimage))
+        self.upload_files((args.uimage, uimage_addr), (args.rootfs, rootfs_addr))
+
+        bootargs = ""
+        bootargs += "mem={} ".format(self.config["mem"]["linux_size"])
+        bootargs += "console={} ".format(self.config["linux_console"])
+        bootargs += "ip={}:{}:{}:{}:camera1::off; ".format(
+            self.device_ip, self.host_ip_interface.ip, self.host_ip_interface.ip, self.host_ip_interface.netmask
+        )
+        bootargs += "mtdparts=hi_sfc:512k(boot) "
+        bootargs += "root=/dev/ram0 ro initrd={:#x},{}".format(rootfs_addr, self.config["mem"]["initrd_size"])
+
+        logging.info("Load kernel with bootargs: {}".format(bootargs))
+
+        self.client.setenv(bootargs=bootargs)
+        self.client.bootm(uimage_addr)
+        logging.info("OS seems successfully started")
