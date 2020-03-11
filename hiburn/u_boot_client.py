@@ -7,13 +7,14 @@ ENCODING = "ascii"
 LF = b"\n"
 CTRL_C = b"\x03"
 PROMPTS = ("hisilicon #",)
-
+READ_TIMEOUT = 0.5
 
 
 class UBootClient:
     def __init__(self, port, baudrate, prompts=PROMPTS):
         self.prompts = set(prompts)
         self.s = serial.Serial(port=port, baudrate=baudrate)
+        self.s.timeout = READ_TIMEOUT
         logging.debug("Serial port is opened")
 
     def _readline(self):
@@ -40,7 +41,7 @@ class UBootClient:
             pass
 
         logging.debug("Wait for prompt...")
-        self.s.timeout = 0
+        self.s.timeout = 0  # to be as fast as possible =)
         while True:
             self.s.write(CTRL_C)
             if self._readline() in self.prompts:
@@ -52,7 +53,7 @@ class UBootClient:
         time.sleep(0.5)
         self.s.reset_input_buffer()
 
-        self.s.timeout = 0.5
+        self.s.timeout = READ_TIMEOUT
         while True:
             self.s.write(LF)
             if self._readline().strip() in self.prompts:
@@ -64,7 +65,7 @@ class UBootClient:
         self._write(cmd + "\n")
         echoed = self._readline()
         if not echoed.endswith(cmd):
-            raise RuntimeError("echoed data '{}' doesn't match input '{}'".format(echoed, data))
+            raise RuntimeError("echoed data '{}' doesn't match input '{}'".format(echoed, cmd))
 
     def read_response(self):
         """ Read lines from serial port till prompt line is received
@@ -88,8 +89,13 @@ class UBootClient:
             sv = sv.replace(";", "\;")
             self.write_command("setenv {} {}".format(k, sv))
 
-    def tftp(self, offset, file_name):
-        self.write_command("tftp {:#x} {}".format(offset, file_name))
+    def ping(self, addr):
+        self.write_command("ping {}".format(addr))
+        return self.read_response()
+
+    def tftp(self, offset, file_name, addr=""):
+        self.write_command("tftp {:#x} {} {}".format(offset, file_name, addr))
+        return self.read_response()
 
     def bootm(self, uimage_addr):
         self.write_command("bootm {:#x}".format(uimage_addr))
