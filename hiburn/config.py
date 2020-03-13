@@ -1,6 +1,7 @@
 
 import copy
 import json
+import logging
 from . import utils
 
 
@@ -28,27 +29,27 @@ def _add_args_from_config_desc(parser, config_desc, prefix="--"):
             continue
 
         if isinstance(val, tuple):  # tuple contains: value, type, help
-            parser.add_argument(arg_name, type=val[1], default=val[0], metavar="V",
+            parser.add_argument(arg_name, type=val[1], metavar="V",
                 help="{}, default: {}".format(val[2], val[0]))
         else:
             t = utils.str2bool if isinstance(val, bool) else type(val)
-            parser.add_argument(arg_name, type=t, default=val, metavar="V",
+            parser.add_argument(arg_name, type=t, metavar="V",
                 help="{}, default: {}".format(type(val).__name__, val))
 
 
 # -------------------------------------------------------------------------------------------------
-def _update_config(config, src, path=""):
+def _update_config(dst, src, config_desc, path=""):
     for key, new_val in src.items():
-        orig_val = config.get()
-        if type(new_val) is not type(orig_val):
-            raise TypeError(
-                "Config value at '{}/{}' has inappropriate typ '{}' but expected '{}'".format(
-                    path, key, type(new_val), type(orig_val)
-                ))
+        orig_val = dst.get(key)
+        field_desc = config_desc.get(key)
         if isinstance(new_val, dict):
-            _update_config(orig_val, new_val, "{}/{}".format(path, key))
+            _update_config(orig_val, new_val, field_desc, "{}/{}".format(path, key))
         else:
-            config[k] = new_val
+            if (type(field_desc) is tuple) and (type(new_val) is str):
+                dst[key] = field_desc[1](new_val)  # perform conversion
+            else:
+                dst[key] = type(field_desc)(new_val)
+            logging.debug("Set {}={} from config file".format(key, dst[key]))
 
 
 # -------------------------------------------------------------------------------------------------
@@ -75,10 +76,10 @@ def get_config_from_args(args, config_desc):
     config = _create_config_from_desc(config_desc)
 
     if args.config is not None:
+        logging.debug("Update default config by user's one '{}'".format(args.config))
         with open(args.config, "r") as f:
             user_config = json.load(f)
-        _update_config(config, user_config)
+        _update_config(config, user_config, config_desc)
 
     _update_config_by_args(config, vars(args))
-    
     return config

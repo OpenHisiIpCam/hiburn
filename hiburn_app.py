@@ -62,6 +62,9 @@ def main():
     parser.add_argument("--no-fetch", "-n", action="store_true",
         help="Assume U-Boot's console is already fetched"
     )
+    parser.add_argument("--print-config", action="store_true",
+        help="Just print result config"
+    )
     add_arguments_from_config_desc(parser, DEFAULT_CONFIG_DESC)
     actions.add_actions(parser,
         actions.printenv,
@@ -72,9 +75,13 @@ def main():
     )
 
     args = parser.parse_args()
+    logging.basicConfig(level=(logging.DEBUG if args.verbose else logging.INFO))
     config = get_config_from_args(args, DEFAULT_CONFIG_DESC)
 
-    logging.basicConfig(level=(logging.DEBUG if args.verbose else logging.INFO))
+    if args.print_config:
+        print(json.dumps(config, indent=2, sort_keys=True))
+        exit(0)
+
     client = UBootClient(
         port=config["serial"]["port"],
         baudrate=config["serial"]["baudrate"]
