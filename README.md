@@ -12,6 +12,7 @@ power and press Enter. We believe it may save your time and nerves =)
 `./hiburn_app.py --help`
 
 *TODO*: add an example
+
 Since the tool is written on Python it should be easy to check source and fix/modify it for your needs =)
 
 ## Dependencies
