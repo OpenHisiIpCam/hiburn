@@ -2,20 +2,24 @@
 Deploy automation tool for HiSilicon`s ip camera modules
 
 ## Why?
-To deploy custom firmware (Kernel&RootFS images) onto a camera you usually need to do set of
-actions: reset the camera's power, "catch" U-Boot console, configure network, launch TFTP server
-etc. It becomes especially irritating when you do it over and over again.
-The tool is intended to automate this process. Usually all you need is to launch **hiburn**, reset camera's
-power and press Enter. We believe it may save your time and nerves =)
+To deploy custom firmware (Kernel & RootFS images) onto a HiSilicon camera you usually need to do a number of actions: reset the camera's power, "catch" U-Boot console, configure network, launch TFTP server etc. It becomes especially irritating when you do it over and over again.
+The tool is intended to automate this routine. All you need is to launch **hiburn**, reset camera's power and press Enter. We believe it may save your time and nerves =)
+
 
 ## How?
-`./hiburn_app.py --help`
+The actual description of capabilities and options you may get via `./hiburn_app.py --help`
 
-*TODO*: add an example
+There is an example command to upload images into device's memory and boot it  
 
-Since the tool is written on Python it should be easy to check source and fix/modify it for your needs =)
+`./hiburn_app.py --serial-port /dev/ttyCAM1 --serial-baudrate 115200 --net-target 192.168.10.101 --net-host 192.168.10.2/24 --mem-base_addr 0x82000000 --mem-initrd_size 16M --mem-linux_size 256M boot --uimage /path/to/my/kernel/uImage --rootfs /path/yo/my/rootfs.squashfs`
+
+*Notes*:
+- Since U-Boot usually connects to default TFTP server's port (69) you will need to be a root (or find some workaround like `authbind`)
+
 
 ## Dependencies
 The tool is written on python3 and needs (obviously) python3 as well as a few packages from PyPI
 * pyserial
 * tftpy
+
+The tool is written on Python and it should be easy to check sources and fix/modify it for your needs =)
