@@ -57,7 +57,7 @@ def _create_config_from_desc(config_desc):
     res = {}
     for key, val in config_desc.items():
         if isinstance(val, tuple):  # tuple contains: value, type, help
-            res[key] = val[0]
+            res[key] = val[1](val[0])
         elif isinstance(val, dict):
             res[key] = _create_config_from_desc(val)
         else:

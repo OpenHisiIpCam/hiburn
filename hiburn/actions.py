@@ -69,11 +69,12 @@ class ping(Action):
         result = self.client.ping(self.host_ip_interface.ip)[-1]
         if not result.endswith("is alive"):
             raise RuntimeError("network is unavailable")
+        print("Network is fine")
 
 
 # -------------------------------------------------------------------------------------------------
 class download(Action):
-    """ Download data from device's memory via TFTP
+    """ Download data from device's RAM via TFTP
     """
     @classmethod
     def add_arguments(cls, parser):
@@ -90,7 +91,7 @@ class download(Action):
 
 # -------------------------------------------------------------------------------------------------
 class upload(Action):
-    """ Upload data to device's memory via TFTP
+    """ Upload data to device's RAM via TFTP
     """
     @classmethod
     def add_arguments(cls, parser):
@@ -104,7 +105,7 @@ class upload(Action):
 
 # -------------------------------------------------------------------------------------------------
 class boot(Action):
-    """ Upload Kernel and RootFS images to device and boot using them
+    """ Upload Kernel and RootFS images into device's RAM and boot it
     """
     @classmethod
     def add_arguments(cls, parser):

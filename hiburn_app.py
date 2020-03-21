@@ -2,9 +2,7 @@
 import logging
 import argparse
 import json
-import ipaddress
 import os
-import inspect
 from hiburn.u_boot_client import UBootClient
 from hiburn.config import add_arguments_from_config_desc, get_config_from_args
 from hiburn import utils
@@ -14,15 +12,15 @@ from hiburn import actions
 # -------------------------------------------------------------------------------------------------
 DEFAULT_CONFIG_DESC = {
     "serial": {
-        "port": "/dev/ttyCAM1",
-        "baudrate": 115200
+        "port": ("/dev/ttyCAM1", str, "Serial port to interact with"),
+        "baudrate": (115200, int, "Baudrate of the serial port")
     },
     "net": {
         "target": ("192.168.10.101", str, "Target IP address"),
         "host": ("192.168.10.2/24", str, "Host IP address and mask's length")
     },
     "mem": {
-        "base_addr": (0x82000000, utils.hsize2int, "Base RAM address"),
+        "base_addr": ("0x82000000", utils.hsize2int, "Base RAM address"),
         "block_size": ("64K", utils.hsize2int, "Memory block size"),
         "initrd_size": ("16M", utils.hsize2int, "Amount of RAM for initrd"),
         "linux_size": ("256M", utils.hsize2int, "Amount of RAM for Linux"),
@@ -30,26 +28,6 @@ DEFAULT_CONFIG_DESC = {
     },
     "linux_console": ("ttyAMA0,115200", str, "Linux load console")
 }
-
-
-# -------------------------------------------------------------------------------------------------
-def upload(client: UBootClient, config):
-    """ Upload data to device's memory via TFTP
-    """
-
-    # 1. set network parameters
-    configure_network(client, config)
-
-    # 2. upload images
-    block_size = config["memory"]["block_size"]
-    base_addr = config["memory"]["base_addr"]
-
-    uimage_addr = base_addr
-    rootfs_addr = utils.aligned_address(block_size, uimage_addr + os.path.getsize(config["uimage"]))
-    utils.upload_files_via_tftp(client, (
-        (config["uimage"], uimage_addr),
-        (config["rootfs"], rootfs_addr)
-    ), listen_ip=str(ip_interface.ip))
 
 
 # -------------------------------------------------------------------------------------------------
