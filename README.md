@@ -22,4 +22,5 @@ The tool is written on python3 and needs (obviously) python3 as well as a few pa
 * pyserial
 * tftpy
 
+**********
 The tool is written on Python and it should be easy to check sources and fix/modify it for your needs =)
