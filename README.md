@@ -15,7 +15,7 @@ There is an example command to upload images into device's memory and boot it
 
 *Notes*:
 - Since U-Boot usually connects to default TFTP server's port (69) you will need to be a root (or find some workaround like `authbind`)
-
+- Existing commands write into your device's RAM only; its flash stays pristine. So the device won't turn into a brick if something goes wrong - just reset it.
 
 ## Dependencies
 The tool is written on python3 and needs (obviously) python3 as well as a few packages from PyPI
