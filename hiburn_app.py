@@ -3,6 +3,7 @@ import logging
 import argparse
 import json
 import os
+import subprocess
 from hiburn.u_boot_client import UBootClient
 from hiburn.config import add_arguments_from_config_desc, get_config_from_args
 from hiburn import utils
@@ -30,6 +31,16 @@ DEFAULT_CONFIG_DESC = {
 }
 
 
+def reset_power(cmd=None):
+    if cmd is None:
+        print("Please, swith OFF the device's power press Enter")
+        input()
+        print("Please, swith ON the device's power")
+    else:
+        logging.debug("Run '{}' shell command to reset power...".format(cmd))
+        subprocess.check_call(cmd, shell=True)
+
+
 # -------------------------------------------------------------------------------------------------
 def main():
     parser = argparse.ArgumentParser()
@@ -42,6 +53,9 @@ def main():
     )
     parser.add_argument("--print-config", action="store_true",
         help="Just print result config"
+    )
+    parser.add_argument("--reset-cmd", type=str,
+        help="Shell command to reset device's power"
     )
     add_arguments_from_config_desc(parser, DEFAULT_CONFIG_DESC)
     actions.add_actions(parser,
@@ -66,9 +80,7 @@ def main():
     )
 
     if not args.no_fetch:
-        print("Please, swith OFF the device's power press Enter")
-        input()
-        print("Please, swith ON the device's power")
+        reset_power(args.reset_cmd)
         client.fetch_console()
 
     if hasattr(args, "action"):
