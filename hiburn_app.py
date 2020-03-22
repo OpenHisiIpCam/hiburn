@@ -31,9 +31,10 @@ DEFAULT_CONFIG_DESC = {
 }
 
 
+# -------------------------------------------------------------------------------------------------
 def reset_power(cmd=None):
     if cmd is None:
-        print("Please, swith OFF the device's power press Enter")
+        print("Please, swith OFF the device's power and press Enter")
         input()
         print("Please, swith ON the device's power")
     else:
