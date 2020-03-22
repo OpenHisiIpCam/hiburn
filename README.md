@@ -1,5 +1,13 @@
-# hiburn
-Deploy automation tool for HiSilicon`s ip camera modules
+<p align="center">
+ <img src="images/hiburn200.png" alt="hiburn">
+</p>
+
+<h3 align="center">HiBurn</h3>
+
+---
+
+<p align="center">Deploy automation tool for HiSilicon`s ip camera modules</p>
+<p align="center"><em>Part of OpenHisiIpCam project</em></p>
 
 ## Why?
 To deploy custom firmware (Kernel & RootFS images) onto a HiSilicon camera you usually need to do a number of actions: reset the camera's power, "catch" U-Boot console, configure network, launch TFTP server etc. It becomes especially irritating when you do it over and over again.
