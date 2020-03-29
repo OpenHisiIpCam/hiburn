@@ -23,22 +23,28 @@ class Action:
 
     # some helper methods are below
     @property
-    def host_ip_interface(self):
-        return ipaddress.ip_interface(self.config["net"]["host"])
+    def host_ip(self):
+        return ipaddress.ip_interface(self.config["net"]["host_ip_mask"]).ip
+
+    @property
+    def host_netmask(self):
+        return ipaddress.ip_interface(self.config["net"]["host_ip_mask"]).netmask
 
     @property
     def device_ip(self):
-        return ipaddress.ip_address(self.config["net"]["target"])
+        return ipaddress.ip_address(self.config["net"]["device_ip"])
 
     def configure_network(self):
+        """ Common method to configure network on target device
+        """
         self.client.setenv(
             ipaddr=self.device_ip,
-            netmask=self.host_ip_interface.netmask,
-            serverip=self.host_ip_interface.ip
+            serverip=self.host_ip,
+            netmask=self.host_netmask
         )
     
     def upload_files(self, *args):
-        utils.upload_files_via_tftp(self.client, args, listen_ip=str(self.host_ip_interface.ip))
+        utils.upload_files_via_tftp(self.client, args, listen_ip=str(self.host_ip))
 
 
 def add_actions(parser, *actions):
@@ -66,7 +72,7 @@ class ping(Action):
     """
     def run(self, args):
         self.configure_network()
-        result = self.client.ping(self.host_ip_interface.ip)[-1]
+        result = self.client.ping(self.host_ip)[-1]
         if not result.endswith("is alive"):
             raise RuntimeError("network is unavailable")
         print("Network is fine")
@@ -86,7 +92,7 @@ class download(Action):
         self.configure_network()
         utils.download_files_via_tftp(self.client, (
             (args.dst, args.addr, args.size),
-        ), listen_ip=str(self.host_ip_interface.ip))
+        ), listen_ip=str(self.host_ip))
 
 
 # -------------------------------------------------------------------------------------------------
@@ -126,7 +132,7 @@ class boot(Action):
         bootargs += "mem={} ".format(self.config["mem"]["linux_size"])
         bootargs += "console={} ".format(self.config["linux_console"])
         bootargs += "ip={}:{}:{}:{}:camera1::off; ".format(
-            self.device_ip, self.host_ip_interface.ip, self.host_ip_interface.ip, self.host_ip_interface.netmask
+            self.device_ip, self.host_ip, self.host_ip, self.host_netmask
         )
         bootargs += "mtdparts=hi_sfc:512k(boot) "
         bootargs += "root=/dev/ram0 ro initrd={:#x},{}".format(rootfs_addr, self.config["mem"]["initrd_size"])

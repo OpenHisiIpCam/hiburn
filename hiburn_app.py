@@ -17,8 +17,8 @@ DEFAULT_CONFIG_DESC = {
         "baudrate": (115200, int, "Baudrate of the serial port")
     },
     "net": {
-        "target": ("192.168.10.101", str, "Target IP address"),
-        "host": ("192.168.10.2/24", str, "Host IP address and mask's length")
+        "device_ip": ("192.168.10.101", str, "Target IP address"),
+        "host_ip_mask": ("192.168.10.2/24", str, "Host IP address and mask's length")
     },
     "mem": {
         "base_addr": ("0x82000000", utils.hsize2int, "Base RAM address"),
