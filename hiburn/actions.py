@@ -115,16 +115,16 @@ class boot(Action):
     """
     @classmethod
     def add_arguments(cls, parser):
+        parser.add_argument("--upload-addr", type=utils.hsize2int, required=True, help="Start address to upload into")
         parser.add_argument("--uimage", type=str, required=True, help="Kernel UImage file")
         parser.add_argument("--rootfs", type=str, required=True, help="RootFS image file")
     
     def run(self, args):
         BLOCK_SIZE = self.config["mem"]["block_size"]
-        BASE_ADDR = self.config["mem"]["base_addr"]
 
         self.configure_network()
 
-        uimage_addr = BASE_ADDR
+        uimage_addr = args.upload_addr
         rootfs_addr = utils.aligned_address(BLOCK_SIZE, uimage_addr + os.path.getsize(args.uimage))
         self.upload_files((args.uimage, uimage_addr), (args.rootfs, rootfs_addr))
 

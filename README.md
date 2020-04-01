@@ -19,7 +19,7 @@ The actual description of capabilities and options you may get via `./hiburn_app
 
 There is an example command to upload images into device's memory and boot it  
 
-`./hiburn_app.py --serial-port /dev/ttyCAM1 --serial-baudrate 115200 --net-target 192.168.10.101 --net-host 192.168.10.2/24 --mem-base_addr 0x82000000 --mem-initrd_size 16M --mem-linux_size 256M boot --uimage /path/to/my/kernel/uImage --rootfs /path/yo/my/rootfs.squashfs`
+`./hiburn_app.py --serial-port /dev/ttyCAM1 --serial-baudrate 115200 --net-device_ip 192.168.10.101 --net-host_ip_mask 192.168.10.2/24 --mem-start_addr 0x82000000 --mem-initrd_size 16M --mem-linux_size 256M boot --upload-add 0x81000000 --uimage /path/to/my/kernel/uImage --rootfs /path/yo/my/rootfs.squashfs`
 
 *Notes*:
 - Since U-Boot usually connects to default TFTP server's port (69) you will need to be a root (or find some workaround like `authbind`)

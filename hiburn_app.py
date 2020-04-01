@@ -21,7 +21,7 @@ DEFAULT_CONFIG_DESC = {
         "host_ip_mask": ("192.168.10.2/24", str, "Host IP address and mask's length")
     },
     "mem": {
-        "base_addr": ("0x82000000", utils.hsize2int, "Base RAM address"),
+        "start_addr": ("0x80000000", utils.hsize2int, "RAM start address"),
         "block_size": ("64K", utils.hsize2int, "Memory block size"),
         "initrd_size": ("16M", utils.hsize2int, "Amount of RAM for initrd"),
         "linux_size": ("256M", utils.hsize2int, "Amount of RAM for Linux"),
