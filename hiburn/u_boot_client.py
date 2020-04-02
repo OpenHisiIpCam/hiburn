@@ -6,7 +6,7 @@ import time
 ENCODING = "ascii"
 LF = b"\n"
 CTRL_C = b"\x03"
-PROMPTS = ("hisilicon #",)
+PROMPTS = ("hisilicon #", "Zview #",)
 READ_TIMEOUT = 0.5
 
 
