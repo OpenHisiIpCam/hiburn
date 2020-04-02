@@ -50,7 +50,7 @@ class UBootClient:
         logging.debug("Prompt received")
 
         # let the device write all it wants
-        time.sleep(0.5)
+        time.sleep(1.0)
         self.s.reset_input_buffer()
 
         self.s.timeout = READ_TIMEOUT
@@ -88,6 +88,7 @@ class UBootClient:
             sv = str(v)
             sv = sv.replace(";", "\;")
             self.write_command("setenv {} {}".format(k, sv))
+            self.read_response()
 
     def ping(self, addr):
         self.write_command("ping {}".format(addr))
