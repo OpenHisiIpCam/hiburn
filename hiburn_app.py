@@ -22,7 +22,7 @@ DEFAULT_CONFIG_DESC = {
     },
     "mem": {
         "start_addr": ("0x80000000", utils.hsize2int, "RAM start address"),
-        "block_size": ("64K", utils.hsize2int, "Memory block size"),
+        "alignment": ("64K", utils.hsize2int, "RAM alignment for uploading"),
         "initrd_size": ("16M", utils.hsize2int, "Amount of RAM for initrd"),
         "linux_size": ("256M", utils.hsize2int, "Amount of RAM for Linux"),
         "uboot_size": ("512K", utils.hsize2int, ""),

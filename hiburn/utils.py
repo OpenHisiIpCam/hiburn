@@ -26,9 +26,13 @@ def hsize2int(val: str):
 
 
 # -------------------------------------------------------------------------------------------------
-def aligned_address(alignment, addr):
-    blocks = addr // alignment + (1 if addr % alignment else 0)
-    return blocks * alignment
+def align_address_down(alignment, addr):
+    return addr // alignment * alignment
+
+
+# -------------------------------------------------------------------------------------------------
+def align_address_up(alignment, addr):
+    return align_address_down(alignment, addr + alignment - 1)
 
 
 # -------------------------------------------------------------------------------------------------

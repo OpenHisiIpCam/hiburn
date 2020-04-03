@@ -115,19 +115,28 @@ class boot(Action):
     """
     @classmethod
     def add_arguments(cls, parser):
-        parser.add_argument("--upload-addr", type=utils.hsize2int, required=True, help="Start address to upload into")
         parser.add_argument("--uimage", type=str, required=True, help="Kernel UImage file")
         parser.add_argument("--rootfs", type=str, required=True, help="RootFS image file")
+        parser.add_argument("--upload-addr", type=utils.hsize2int, help="Start address to upload into")
     
     def run(self, args):
-        BLOCK_SIZE = self.config["mem"]["block_size"]
-
         self.configure_network()
 
-        uimage_addr = args.upload_addr
         uimage_size = os.path.getsize(args.uimage)
-        rootfs_addr = utils.aligned_address(BLOCK_SIZE, uimage_addr + uimage_size)
         rootfs_size = os.path.getsize(args.rootfs)
+
+        alignment = self.config["mem"]["alignment"]
+        if args.upload_addr is None:
+            mem_end_addr = self.config["mem"]["start_addr"] + self.config["mem"]["linux_size"]
+            rootfs_addr = utils.align_address_down(alignment, mem_end_addr - rootfs_size)
+            uimage_addr = utils.align_address_down(alignment, rootfs_addr - uimage_size)
+        else:
+            uimage_addr = utils.align_address_up(alignment, args.upload_addr)  # to ensure alignment
+            rootfs_addr = utils.align_address_up(alignment, uimage_addr + uimage_size)
+
+        logging.info("Kernel uImage upload addr {:#x}; RootFS image upload addr {:#x}".format(
+            uimage_addr, rootfs_addr
+        ))
 
         self.upload_files((args.uimage, uimage_addr), (args.rootfs, rootfs_addr))
 
@@ -138,7 +147,7 @@ class boot(Action):
             self.device_ip, self.host_ip, self.host_ip, self.host_netmask
         )
         bootargs += "mtdparts=hi_sfc:512k(boot) "
-        bootargs += "root=/dev/ram0 ro initrd={:#x},{}".format(rootfs_addr, self.config["mem"]["initrd_size"])
+        bootargs += "root=/dev/ram0 ro initrd={:#x},{}".format(rootfs_addr, rootfs_size)
 
         logging.info("Load kernel with bootargs: {}".format(bootargs))
 
