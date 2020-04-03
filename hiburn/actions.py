@@ -125,7 +125,10 @@ class boot(Action):
         self.configure_network()
 
         uimage_addr = args.upload_addr
-        rootfs_addr = utils.aligned_address(BLOCK_SIZE, uimage_addr + os.path.getsize(args.uimage))
+        uimage_size = os.path.getsize(args.uimage)
+        rootfs_addr = utils.aligned_address(BLOCK_SIZE, uimage_addr + uimage_size)
+        rootfs_size = os.path.getsize(args.rootfs)
+
         self.upload_files((args.uimage, uimage_addr), (args.rootfs, rootfs_addr))
 
         bootargs = ""
@@ -140,5 +143,11 @@ class boot(Action):
         logging.info("Load kernel with bootargs: {}".format(bootargs))
 
         self.client.setenv(bootargs=bootargs)
-        self.client.bootm(uimage_addr)
-        logging.info("OS seems successfully started")
+        resp = self.client.bootm(uimage_addr)
+        print(
+            "Output ended with next lines:\n" +
+            "... {} lines above\n".format(len(resp)) +
+            "----------------------------------------\n" +
+            "\n".join("  {}".format(l.strip()) for l in resp[-10:]) +
+            "\n----------------------------------------"
+        )

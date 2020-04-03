@@ -10,6 +10,10 @@ PROMPTS = ("hisilicon #", "Zview #", "xmtech #", "hi3516dv300 #", )
 READ_TIMEOUT = 0.5
 
 
+def bytes_to_string(line):
+    return line.decode(ENCODING, errors="replace").rstrip("\r\n")
+
+
 class UBootClient:
     def __init__(self, port, baudrate, prompts=PROMPTS):
         self.prompts = set(prompts)
@@ -17,11 +21,11 @@ class UBootClient:
         self.s.timeout = READ_TIMEOUT
         logging.debug("Serial port is opened")
 
-    def _readline(self):
+    def _readline(self, raw=False):
         line = self.s.readline()
         if line:
             logging.debug("<< {}".format(line))
-        return line.decode(ENCODING, errors="replace").rstrip("\r\n")
+        return line if raw else bytes_to_string(line)
 
     def _write(self, data):
         if isinstance(data, str):
@@ -67,15 +71,25 @@ class UBootClient:
         if not echoed.endswith(cmd):
             raise RuntimeError("echoed data '{}' doesn't match input '{}'".format(echoed, cmd))
 
-    def read_response(self):
-        """ Read lines from serial port till prompt line is received
+    def read_response(self, timeout=None, raw=False):
+        """ Read lines from serial port till prompt line is received or timeout exceeded
         """
+
         response = []
+        if timeout is not None:
+            logging.debug("Read response with timeout={}...".format(timeout))
+            self.s.timeout = timeout
+        
         while True:
-            line = self._readline()
+            line = self._readline(raw=True)
+            if (not line) and (timeout is not None):
+                break  # readline timeout exceeded
+            line = bytes_to_string(line)
             if line.strip() in self.prompts:
-                break
+                break  # prompt line is received
             response.append(line)
+
+        self.s.timeout = READ_TIMEOUT  # restore original timeout
         return response
 
     # simple wraps for U-Boot commands are below
@@ -100,3 +114,4 @@ class UBootClient:
 
     def bootm(self, uimage_addr):
         self.write_command("bootm {:#x}".format(uimage_addr))
+        return self.read_response(timeout=5)
