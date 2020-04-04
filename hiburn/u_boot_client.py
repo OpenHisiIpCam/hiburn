@@ -16,10 +16,16 @@ def bytes_to_string(line):
 
 class UBootClient:
     def __init__(self, port, baudrate, prompts=PROMPTS):
-        self.prompts = set(prompts)
+        self.prompts = prompts
         self.s = serial.Serial(port=port, baudrate=baudrate)
         self.s.timeout = READ_TIMEOUT
         logging.debug("Serial port is opened")
+
+    def _is_prompt(self, line):
+        for prompt in self.prompts:
+            if line.startswith(prompt):
+                return True
+        return False
 
     def _readline(self, raw=False):
         line = self.s.readline()
@@ -45,10 +51,9 @@ class UBootClient:
             pass
 
         logging.debug("Wait for prompt...")
-        self.s.timeout = 0  # to be as fast as possible =)
         while True:
-            self.s.write(CTRL_C)
-            if self._readline() in self.prompts:
+            self._write(CTRL_C)
+            if self._is_prompt(self._readline()):
                 break
 
         logging.debug("Prompt received")
