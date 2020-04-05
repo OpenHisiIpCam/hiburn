@@ -12,10 +12,6 @@ from hiburn import actions
 
 # -------------------------------------------------------------------------------------------------
 DEFAULT_CONFIG_DESC = {
-    "serial": {
-        "port": ("/dev/ttyCAM1", str, "Serial port to interact with"),
-        "baudrate": (115200, int, "Baudrate of the serial port")
-    },
     "net": {
         "device_ip": ("192.168.10.101", str, "Target IP address"),
         "host_ip_mask": ("192.168.10.2/24", str, "Host IP address and mask's length")
@@ -23,7 +19,6 @@ DEFAULT_CONFIG_DESC = {
     "mem": {
         "start_addr": ("0x80000000", utils.hsize2int, "RAM start address"),
         "alignment": ("64K", utils.hsize2int, "RAM alignment for uploading"),
-        "initrd_size": ("16M", utils.hsize2int, "Amount of RAM for initrd"),
         "linux_size": ("256M", utils.hsize2int, "Amount of RAM for Linux"),
         "uboot_size": ("512K", utils.hsize2int, ""),
     },
@@ -45,6 +40,12 @@ def reset_power(cmd=None):
 # -------------------------------------------------------------------------------------------------
 def main():
     parser = argparse.ArgumentParser()
+
+    mutexg = parser.add_mutually_exclusive_group(required=True)
+    mutexg.add_argument("--serial", type=utils.str2serial_kwargs, metavar="V",
+        help="Serial port 'port[:baudrate[:DPS]]'")
+    mutexg.add_argument("--serial-over-telnet", type=utils.str2endpoint, metavar="V",
+        help="Serial-over-telnet endpoint '[host:]port'")
 
     parser.add_argument("--verbose", "-v", action="store_true",
         help="Print debug output"
@@ -75,10 +76,10 @@ def main():
         print(json.dumps(config, indent=2, sort_keys=True))
         exit(0)
 
-    client = UBootClient(
-        port=config["serial"]["port"],
-        baudrate=config["serial"]["baudrate"]
-    )
+    if args.serial is not None:
+        client = UBootClient.create_with_serial(**args.serial)
+    else:
+        client = UBootClient.create_with_serial_over_telnet(*args.serial_over_telnet)
 
     if not args.no_fetch:
         reset_power(args.reset_cmd)
@@ -92,4 +93,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

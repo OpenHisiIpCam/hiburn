@@ -117,13 +117,16 @@ class boot(Action):
     def add_arguments(cls, parser):
         parser.add_argument("--uimage", type=str, required=True, help="Kernel UImage file")
         parser.add_argument("--rootfs", type=str, required=True, help="RootFS image file")
-        parser.add_argument("--upload-addr", type=utils.hsize2int, help="Start address to upload into")
-    
+        parser.add_argument("--upload-addr", type=utils.hsize2int,
+            help="Start address to upload into")
+        parser.add_argument("--initrd-size", type=utils.hsize2int,
+            help="Amount of RAM for initrd (actual size of RootFS image file by default)"),
+
     def run(self, args):
         self.configure_network()
 
         uimage_size = os.path.getsize(args.uimage)
-        rootfs_size = os.path.getsize(args.rootfs)
+        rootfs_size = os.path.getsize(args.rootfs) if args.initrd_size is None else args.initrd_size
 
         alignment = self.config["mem"]["alignment"]
         if args.upload_addr is None:

@@ -15,11 +15,20 @@ def bytes_to_string(line):
 
 
 class UBootClient:
-    def __init__(self, port, baudrate, prompts=PROMPTS):
-        self.prompts = prompts
-        self.s = serial.Serial(port=port, baudrate=baudrate)
+    @classmethod
+    def create_with_serial(cls, **kwargs):
+        return cls(serial.Serial(**kwargs))
+
+    @classmethod
+    def create_with_serial_over_telnet(cls, host, port):
+        from .serial_over_telnet import SerialOverTelnet
+        return cls(SerialOverTelnet(host, port))
+
+    def __init__(self, conn, prompts=PROMPTS):
+        self.s = conn
         self.s.timeout = READ_TIMEOUT
-        logging.debug("Serial port is opened")
+        self.prompts = prompts
+        logging.debug("UBootClient for {} constructed".format(self.s))
 
     def _is_prompt(self, line):
         for prompt in self.prompts:
@@ -46,7 +55,6 @@ class UBootClient:
         self.s.reset_input_buffer()
 
         logging.debug("Wait for U-Boot printable output...")
-        self.s.timeout = None
         while not self._readline().isprintable():
             pass
 
@@ -62,7 +70,6 @@ class UBootClient:
         time.sleep(1.0)
         self.s.reset_input_buffer()
 
-        self.s.timeout = READ_TIMEOUT
         while True:
             self.s.write(LF)
             if self._readline().strip() in self.prompts:

@@ -26,6 +26,48 @@ def hsize2int(val: str):
 
 
 # -------------------------------------------------------------------------------------------------
+def str2serial_kwargs(val):
+    """ Convert string to a dict applicable as kwargs for serial.Serial
+    Format: port[:baudrate[:DPS]]
+    default baudrate is 115200, default DPS is '8N1'
+    """
+
+    splited = val.split(":")
+    port = splited[0]
+    baudrate = 115200
+    dps = "8N1"
+
+    if len(splited) > 1 and splited[1]:
+        baudrate = int(splited[1])
+
+    if len(splited) > 2 and splited[2]:
+        dps = splited[2]
+
+    return dict(
+        port=port,
+        baudrate=baudrate,
+        bytesize=int(dps[0]),
+        parity=dps[1],
+        stopbits=float(dps[2:])
+    )
+
+
+# -------------------------------------------------------------------------------------------------
+def str2endpoint(val):
+    """ Convert string to (host, port) tuple
+    Format: [host:]port
+    default host is 'localhost'
+    """
+
+    splited = val.split(":")
+    if len(splited) > 2:
+        raise RuntimeError("Invalid argument")
+    if len(splited) == 2:
+        return (splited[0], int(splited[1]))
+    return ("localhost", int(splited[0]))
+
+
+# -------------------------------------------------------------------------------------------------
 def align_address_down(alignment, addr):
     return addr // alignment * alignment
 
