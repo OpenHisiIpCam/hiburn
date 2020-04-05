@@ -85,4 +85,4 @@ foo@bar:~/hiburn$ ./hiburn_app.py --serial-port /dev/ttyCAM1 --net-device_ip 192
 - Since U-Boot usually connects to default TFTP server's port (69) you will need to be a root (or find some workaround like `authbind`)
 - Existing commands write into your device's RAM only; its flash stays pristine. So the device won't turn into a brick if something goes wrong - just reset it.
 
-*The tool is written on Python and it should be easy to check sources and fix/modify it for your needs =)*
+*The tool is written on Python and it should be easy to check sources and fix/modify it for your needs :smirk:*
