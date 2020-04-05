@@ -33,35 +33,28 @@ The actual description of capabilities and options you may get via `./hiburn_app
 
 ```console
 foo@bar:~/hiburn$ ./hiburn_app.py --help
-usage: hiburn_app.py [-h] [--verbose] [--no-fetch] [--print-config]
-                     [--reset-cmd RESET_CMD] [--config PATH] [--serial-port V]
-                     [--serial-baudrate V] [--net-device_ip V]
-                     [--net-host_ip_mask V] [--mem-start_addr V]
-                     [--mem-alignment V] [--mem-initrd_size V]
+usage: hiburn_app.py [-h] [--verbose] (--serial V | --serial-over-telnet V)
+                     [--no-fetch] [--reset-cmd RESET_CMD]
+                     [--net-device_ip V] [--net-host_ip_mask V]
+                     [--mem-start_addr V] [--mem-alignment V]
                      [--mem-linux_size V] [--mem-uboot_size V]
                      [--linux_console V]
                      {printenv,ping,download,upload,boot} ...
 
 optional arguments:
-  -h, --help            show this help message and exit
-  --verbose, -v         Print debug output
-  --no-fetch, -n        Assume U-Boot's console is already fetched
-  --print-config        Just print result config
-  --reset-cmd RESET_CMD
-                        Shell command to reset device's power
-  --config PATH, -C PATH
-                        Config path
-  --serial-port V       Serial port to interact with, default: /dev/ttyCAM1
-  --serial-baudrate V   Baudrate of the serial port, default: 115200
-  --net-device_ip V     Target IP address, default: 192.168.10.101
-  --net-host_ip_mask V  Host IP address and mask's length, default:
-                        192.168.10.2/24
-  --mem-start_addr V    RAM start address, default: 0x80000000
-  --mem-alignment V     RAM alignment for uploading, default: 64K
-  --mem-initrd_size V   Amount of RAM for initrd, default: 16M
-  --mem-linux_size V    Amount of RAM for Linux, default: 256M
-  --mem-uboot_size V    , default: 512K
-  --linux_console V     Linux load console, default: ttyAMA0,115200
+  -h, --help                Show this help message and exit
+  --verbose, -v             Print debug output
+  --serial V                Serial port 'port[:baudrate[:DPS]]'
+  --serial-over-telnet V    Serial-over-telnet endpoint '[host:]port'
+  --no-fetch, -n            Assume U-Boot's console is already fetched
+  --reset-cmd RESET_CMD     Shell command to reset device's power
+  --net-device_ip V         Target IP address, default: 192.168.10.101
+  --net-host_ip_mask V      Host IP address and mask's length, default: 192.168.10.2/24
+  --mem-start_addr V        RAM start address, default: 0x80000000
+  --mem-alignment V         RAM alignment for uploading, default: 64K
+  --mem-linux_size V        Amount of RAM for Linux, default: 256M
+  --mem-uboot_size V        , default: 512K
+  --linux_console V         Linux load console, default: ttyAMA0,115200
 
 Action:
   {printenv,ping,download,upload,boot}
@@ -69,8 +62,7 @@ Action:
     ping                Configure network on device and ping host
     download            Download data from device's RAM via TFTP
     upload              Upload data to device's RAM via TFTP
-    boot                Upload Kernel and RootFS images into device's RAM and
-                        boot it
+    boot                Upload Kernel and RootFS images into device's RAM and boot it
 ```
 
 ### Examples
@@ -78,7 +70,7 @@ Action:
 There is an example command to upload images into device's memory and boot it  
 
 ```console
-foo@bar:~/hiburn$ ./hiburn_app.py --serial-port /dev/ttyCAM1 --net-device_ip 192.168.10.101 --net-host_ip_mask 192.168.10.2/24 --mem-start_addr 0x80000000 --mem-linux_size 256M boot --uimage /path/to/my/kernel/uImage --rootfs /path/yo/my/rootfs.squashfs`
+foo@bar:~/hiburn$ ./hiburn_app.py --serial /dev/ttyCAM1:115200 --net-device_ip 192.168.10.101 --net-host_ip_mask 192.168.10.2/24 --mem-start_addr 0x80000000 --mem-linux_size 256M boot --uimage /path/to/my/kernel/uImage --rootfs /path/yo/my/rootfs.squashfs`
 ```
 
 ### Notes

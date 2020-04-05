@@ -40,6 +40,9 @@ def reset_power(cmd=None):
 # -------------------------------------------------------------------------------------------------
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--verbose", "-v", action="store_true",
+        help="Print debug output"
+    )
 
     mutexg = parser.add_mutually_exclusive_group(required=True)
     mutexg.add_argument("--serial", type=utils.str2serial_kwargs, metavar="V",
@@ -47,18 +50,13 @@ def main():
     mutexg.add_argument("--serial-over-telnet", type=utils.str2endpoint, metavar="V",
         help="Serial-over-telnet endpoint '[host:]port'")
 
-    parser.add_argument("--verbose", "-v", action="store_true",
-        help="Print debug output"
-    )
     parser.add_argument("--no-fetch", "-n", action="store_true",
         help="Assume U-Boot's console is already fetched"
-    )
-    parser.add_argument("--print-config", action="store_true",
-        help="Just print result config"
     )
     parser.add_argument("--reset-cmd", type=str,
         help="Shell command to reset device's power"
     )
+
     add_arguments_from_config_desc(parser, DEFAULT_CONFIG_DESC)
     actions.add_actions(parser,
         actions.printenv,
@@ -71,10 +69,6 @@ def main():
     args = parser.parse_args()
     logging.basicConfig(level=(logging.DEBUG if args.verbose else logging.INFO))
     config = get_config_from_args(args, DEFAULT_CONFIG_DESC)
-
-    if args.print_config:
-        print(json.dumps(config, indent=2, sort_keys=True))
-        exit(0)
 
     if args.serial is not None:
         client = UBootClient.create_with_serial(**args.serial)
