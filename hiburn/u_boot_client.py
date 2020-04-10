@@ -127,8 +127,10 @@ class UBootClient:
             self.write_command("tftp {:#x} {} {:#x}".format(addr, file_name, size))
         return self.read_response()
 
-    def bootm(self, uimage_addr):
+    def bootm(self, uimage_addr, wait=True):
         self.write_command("bootm {:#x}".format(uimage_addr))
+        if not wait:
+            return
         return self.read_response(timeout=5)
 
     def sf_probe(self, args):

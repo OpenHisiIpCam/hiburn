@@ -120,7 +120,9 @@ class boot(Action):
         parser.add_argument("--upload-addr", type=utils.hsize2int,
             help="Start address to upload into")
         parser.add_argument("--initrd-size", type=utils.hsize2int,
-            help="Amount of RAM for initrd (actual size of RootFS image file by default)"),
+            help="Amount of RAM for initrd (actual size of RootFS image file by default)")
+        parser.add_argument("--no-wait", action="store_true",
+            help="Don't wait end of serial output and exit immediately after sending 'bootm' command")
 
     def run(self, args):
         self.configure_network()
@@ -155,7 +157,7 @@ class boot(Action):
         logging.info("Load kernel with bootargs: {}".format(bootargs))
 
         self.client.setenv(bootargs=bootargs)
-        resp = self.client.bootm(uimage_addr)
+        resp = self.client.bootm(uimage_addr, wait=(not args.no_wait))
         print(
             "Output ended with next lines:\n" +
             "... {} lines above\n".format(len(resp)) +
