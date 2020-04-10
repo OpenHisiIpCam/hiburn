@@ -158,13 +158,16 @@ class boot(Action):
 
         self.client.setenv(bootargs=bootargs)
         resp = self.client.bootm(uimage_addr, wait=(not args.no_wait))
-        print(
-            "Output ended with next lines:\n" +
-            "... {} lines above\n".format(len(resp)) +
-            "----------------------------------------\n" +
-            "\n".join("  {}".format(l.strip()) for l in resp[-10:]) +
-            "\n----------------------------------------"
-        )
+        if resp is None:
+            print("'bootm' command has been sent. Hopefully booting is going on well...")
+        else:
+            print(
+                "Output ended with next lines:\n" +
+                "... {} lines above\n".format(len(resp)) +
+                "----------------------------------------\n" +
+                "\n".join("  {}".format(l.strip()) for l in resp[-10:]) +
+                "\n----------------------------------------"
+            )
 
 
 # -------------------------------------------------------------------------------------------------
