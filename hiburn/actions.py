@@ -163,3 +163,30 @@ class boot(Action):
             "\n".join("  {}".format(l.strip()) for l in resp[-10:]) +
             "\n----------------------------------------"
         )
+
+
+# -------------------------------------------------------------------------------------------------
+class download_sf(Action):
+    """ Download data from device's SPI flasg via TFTP
+    """
+    @classmethod
+    def add_arguments(cls, parser):
+        parser.add_argument("--probe", type=str, required=True, help="'sf probe' arguments")
+        parser.add_argument("--size", type=utils.hsize2int, required=True, help="Amount of bytes to be downloaded")
+        parser.add_argument("--offset", type=utils.hsize2int, default=0, help="Flash offset")
+        parser.add_argument("--dst", type=str, default="./dump.bin", help="Destination file")
+        parser.add_argument("--addr", type=utils.hsize2int, help="Devices's RAM address read data from flash into")
+
+    def run(self, args):
+        DEFAULT_MEM_ADDR = self.config["mem"]["start_addr"] + (1 << 20)  # 1Mb
+
+        self.configure_network()
+        self.client.sf_probe(args.probe)
+
+        mem_addr = DEFAULT_MEM_ADDR if args.addr is None else args.addr
+        logging.info("Read {} bytes from {} offset of SPI flash into memory at {}...".format(args.size, args.offset, mem_addr))
+        self.client.sf_read(mem_addr, args.offset, args.size)
+
+        utils.download_files_via_tftp(self.client, (
+            (args.dst, mem_addr, args.size),
+        ), listen_ip=str(self.host_ip))

@@ -130,3 +130,11 @@ class UBootClient:
     def bootm(self, uimage_addr):
         self.write_command("bootm {:#x}".format(uimage_addr))
         return self.read_response(timeout=5)
+
+    def sf_probe(self, args):
+        self.write_command("sf probe {}".format(args))
+        return self.read_response()
+
+    def sf_read(self, dst_addr, flash_offset, size):
+        self.write_command("sf read {:#x} {:#x} {:#x}".format(dst_addr, flash_offset, size))
+        return self.read_response()

@@ -62,6 +62,7 @@ def main():
         actions.printenv,
         actions.ping,
         actions.download,
+        actions.download_sf,
         actions.upload,
         actions.boot
     )
