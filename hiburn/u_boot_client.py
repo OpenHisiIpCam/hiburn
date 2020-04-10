@@ -120,8 +120,11 @@ class UBootClient:
         self.write_command("ping {}".format(addr))
         return self.read_response()
 
-    def tftp(self, offset, file_name, addr=""):
-        self.write_command("tftp {:#x} {} {}".format(offset, file_name, addr))
+    def tftp(self, addr, file_name, size=None):
+        if size is None:  # host -> device
+            self.write_command("tftp {:#x} {}".format(addr, file_name))
+        else:  # device -> host
+            self.write_command("tftp {:#x} {} {:#x}".format(addr, file_name, size))
         return self.read_response()
 
     def bootm(self, uimage_addr):
