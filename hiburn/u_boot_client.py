@@ -66,12 +66,7 @@ class UBootClient:
 
         logging.debug("Prompt received")
 
-        # let the device write all it wants
-        time.sleep(1.0)
-        self.s.reset_input_buffer()
-
         while True:
-            self.s.write(LF)
             if self._readline().strip() in self.prompts:
                 break
 
