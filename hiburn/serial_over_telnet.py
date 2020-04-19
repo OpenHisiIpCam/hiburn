@@ -15,6 +15,7 @@ class SerialOverTelnet:
         return self.conn.read_until(b"\n", timeout=self._timeout)
 
     def write(self, data):
+        print(zzz)
         self.conn.write(data)
 
     def reset_input_buffer(self):
