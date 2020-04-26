@@ -6,7 +6,7 @@ import time
 ENCODING = "ascii"
 LF = b"\n"
 CTRL_C = b"\x03"
-PROMPTS = ("hisilicon #", "Zview #", "xmtech #", "hi3516dv300 #", "hi3519a #", )
+PROMPTS = ("hisilicon #", "Zview #", "xmtech #", "hi3516dv300 #", "hi3519a #", "U-Boot>", )
 READ_TIMEOUT = 0.5
 
 
