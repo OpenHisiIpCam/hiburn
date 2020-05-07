@@ -1,6 +1,7 @@
 import serial
 import logging
 import time
+from . import ymodem
 
 
 ENCODING = "ascii"
@@ -133,5 +134,11 @@ class UBootClient:
         return self.read_response()
 
     def sf_read(self, dst_addr, flash_offset, size):
-        self.write_command("sf read {:#x} {:#x} {:#x}".format(dst_addr, flash_offset, size))
+        self.write_command("sf read {:#x} {:#x}".format(dst_addr, flash_offset, size))
+        return self.read_response()
+
+    def loady(self, addr, data):
+        self.write_command("loady {:#x}".format(addr))
+        self._readline()
+        ymodem.ymodem_transmit(self.s, data)
         return self.read_response()

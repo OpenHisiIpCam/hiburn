@@ -2,6 +2,7 @@ import logging
 import ipaddress
 import os
 from . import utils
+from . import ymodem
 
 
 # -------------------------------------------------------------------------------------------------
@@ -45,6 +46,12 @@ class Action:
     
     def upload_files(self, *args):
         utils.upload_files_via_tftp(self.client, args, listen_ip=str(self.host_ip))
+
+    def upload_y_files(self, *args):
+        for fname, addr in args:
+            with open(fname, "rb") as f:
+                data = f.read()
+            self.client.loady(addr, data)
 
 
 def add_actions(parser, *actions):
@@ -123,6 +130,8 @@ class boot(Action):
             help="Amount of RAM for initrd (actual size of RootFS image file by default)")
         parser.add_argument("--no-wait", action="store_true",
             help="Don't wait end of serial output and exit immediately after sending 'bootm' command")
+        parser.add_argument("--ymodem", action="store_true",
+            help="Upload via serial (ymodem protocol)")
 
     def run(self, args):
         self.configure_network()
@@ -143,7 +152,10 @@ class boot(Action):
             uimage_addr, rootfs_addr
         ))
 
-        self.upload_files((args.uimage, uimage_addr), (args.rootfs, rootfs_addr))
+        if args.ymodem:
+            self.upload_y_files((args.uimage, uimage_addr), (args.rootfs, rootfs_addr))
+        else:
+            self.upload_files((args.uimage, uimage_addr), (args.rootfs, rootfs_addr))
 
         bootargs = ""
         bootargs += "mem={} ".format(self.config["mem"]["linux_size"])
@@ -195,3 +207,17 @@ class download_sf(Action):
         utils.download_files_via_tftp(self.client, (
             (args.dst, mem_addr, args.size),
         ), listen_ip=str(self.host_ip))
+
+
+# -------------------------------------------------------------------------------------------------
+class upload_y(Action):
+    """ Upload data to device's RAM via serial (ymodem)
+    """
+    @classmethod
+    def add_arguments(cls, parser):
+        pass
+        # parser.add_argument("--src", type=str, required=True, help="File to be uploaded")
+        # parser.add_argument("--addr", type=utils.hsize2int, required=True, help="Destination address in device's memory")
+
+    def run(self, args):
+        self.client.loady(b"bla bla bla!")
