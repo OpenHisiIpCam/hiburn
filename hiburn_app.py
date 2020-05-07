@@ -65,6 +65,7 @@ def main():
         actions.download,
         actions.download_sf,
         actions.upload,
+        actions.upload_y,
         actions.boot
     )
 
