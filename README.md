@@ -67,14 +67,14 @@ Action:
 
 ### Examples
 
-There is an example command to upload images into device's memory and boot it  
+There is an example command to upload images into device's memory via TFTP and boot it  
 
 ```console
 foo@bar:~/hiburn$ ./hiburn_app.py --serial /dev/ttyCAM1:115200 --net-device_ip 192.168.10.101 --net-host_ip_mask 192.168.10.2/24 --mem-start_addr 0x80000000 --mem-linux_size 256M boot --uimage /path/to/my/kernel/uImage --rootfs /path/yo/my/rootfs.squashfs`
 ```
 
 ### Notes
-- Since U-Boot usually connects to default TFTP server's port (69) you will need to be a root (or find some workaround like `authbind`)
+- Since U-Boot usually connects to default TFTP server's port (69) you will need to be a root (or find some workaround like `authbind`). Another option is ```--ymodem```-mode for uploading via serial port.
 - Existing commands write into your device's RAM only; its flash stays pristine. So the device won't turn into a brick if something goes wrong - just reset it.
 
 *The tool is written on Python and it should be easy to check sources and fix/modify it for your needs :smirk:*

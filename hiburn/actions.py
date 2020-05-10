@@ -134,8 +134,6 @@ class boot(Action):
             help="Upload via serial (ymodem protocol)")
 
     def run(self, args):
-        self.configure_network()
-
         uimage_size = os.path.getsize(args.uimage)
         rootfs_size = os.path.getsize(args.rootfs) if args.initrd_size is None else args.initrd_size
 
@@ -155,6 +153,7 @@ class boot(Action):
         if args.ymodem:
             self.upload_y_files((args.uimage, uimage_addr), (args.rootfs, rootfs_addr))
         else:
+            self.configure_network()
             self.upload_files((args.uimage, uimage_addr), (args.rootfs, rootfs_addr))
 
         bootargs = ""
