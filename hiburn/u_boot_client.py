@@ -137,8 +137,8 @@ class UBootClient:
         self.write_command("sf read {:#x} {:#x}".format(dst_addr, flash_offset, size))
         return self.read_response()
 
-    def loady(self, addr, data):
+    def loady(self, addr, data, long=True):
         self.write_command("loady {:#x}".format(addr))
         self._readline()
-        ymodem.ymodem_transmit(self.s, data)
+        ymodem.YModem(self.s).transmit(data, long=long)
         return self.read_response()
