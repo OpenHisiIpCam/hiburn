@@ -159,9 +159,16 @@ class boot(Action):
         bootargs = ""
         bootargs += "mem={} ".format(self.config["mem"]["linux_size"])
         bootargs += "console={} ".format(self.config["linux_console"])
-        bootargs += "ip={}:{}:{}:{}:camera1::off; ".format(
-            self.device_ip, self.host_ip, self.host_ip, self.host_netmask
+        
+        #bootargs += "ip={}:{}:{}:{}:camera1::off; ".format(
+        #    self.device_ip, self.host_ip, self.host_ip, self.host_netmask
+        #)
+        
+        bootargs += "ip={}:{}:{}:{}:{}::off:{}:{}; ".format(
+            self.device_ip, self.host_ip, "192.168.10.1", self.host_mask, "camera1", "192.168.10.1", "8.8.8.8"
         )
+
+
         bootargs += "mtdparts=hi_sfc:512k(boot) "
         bootargs += "root=/dev/ram0 ro initrd={:#x},{}".format(rootfs_addr, rootfs_size)
 
