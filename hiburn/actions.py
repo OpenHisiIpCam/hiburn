@@ -133,6 +133,35 @@ class boot(Action):
         parser.add_argument("--ymodem", action="store_true",
             help="Upload via serial (ymodem protocol)")
 
+        bootargs_group = parser.add_argument_group("bootargs", "Kernel's boot arguments")
+        bootargs_group.add_argument("--bootargs-ip", metavar="IP", type=str,
+            help="Literal value for `ip=` parameter")
+        bootargs_group.add_argument("--bootargs-ip-gw", metavar="IP",type=str,
+            help="Value for <gw-ip> of `ip=` parameter")
+        bootargs_group.add_argument("--bootargs-ip-hostname", metavar="HOSTNAME", type=str,
+            help="Value for <hostname> of `ip=` parameter")
+        bootargs_group.add_argument("--bootargs-ip-dns1", metavar="IP", type=str,
+            help="Value for <dns0-ip> of `ip=` parameter")
+        bootargs_group.add_argument("--bootargs-ip-dns2", metavar="IP", type=str,
+            help="Value for <dns1-ip> of `ip=` parameter")
+
+    def get_bootargs_ip(self, args):
+        if args.bootargs_ip is not None:
+            return args.bootargs_ip
+        fmt = "{client_ip}:{server_ip}:{gw_ip}:{netmask}:{hostname}:{device}:{autoconf}:{dns0_ip}:{dns1_ip}:{ntp0_ip}"
+        return fmt.format(
+            client_ip=self.device_ip,
+            server_ip=self.host_ip,
+            gw_ip=args.bootargs_ip_gw or self.host_ip,
+            netmask=self.host_netmask,
+            hostname=args.bootargs_ip_hostname or "camera1",
+            device="",
+            autoconf="off",
+            dns0_ip=args.bootargs_ip_dns1 or self.host_ip,
+            dns1_ip=args.bootargs_ip_dns2 or "",
+            ntp0_ip=""
+        )
+
     def run(self, args):
         uimage_size = os.path.getsize(args.uimage)
         rootfs_size = os.path.getsize(args.rootfs) if args.initrd_size is None else args.initrd_size
@@ -159,9 +188,8 @@ class boot(Action):
         bootargs = ""
         bootargs += "mem={} ".format(self.config["mem"]["linux_size"])
         bootargs += "console={} ".format(self.config["linux_console"])
-        bootargs += "ip={}:{}:{}:{}:camera1::off; ".format(
-            self.device_ip, self.host_ip, self.host_ip, self.host_netmask
-        )
+        bootargs += "ip=" + self.get_bootargs_ip(args) + " "
+
         bootargs += "mtdparts=hi_sfc:512k(boot) "
         bootargs += "root=/dev/ram0 ro initrd={:#x},{}".format(rootfs_addr, rootfs_size)
 
