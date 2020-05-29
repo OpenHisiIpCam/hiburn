@@ -7,7 +7,7 @@ from . import ymodem
 ENCODING = "ascii"
 LF = b"\n"
 CTRL_C = b"\x03"
-PROMPTS = ("hisilicon #", "Zview #", "xmtech #", "hi3516dv300 #", "hi3519a #", "U-Boot>", "hi3516d #", "XiaoYi#", "hi3516cv500 #", )
+PROMPTS = ("hisilicon #", "Zview #", "xmtech #", "hi3516dv300 #", "hi3519a #", "U-Boot>", "hi3516d #", "XiaoYi#", "hi3516cv500 #", "16dv300 #")
 READ_TIMEOUT = 0.5
 
 
