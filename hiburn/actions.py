@@ -255,8 +255,9 @@ class fastboot(Action):
     """
     @classmethod
     def add_arguments(cls, parser):
-        parser.add_argument("--fastboot-bin", type=str, required=True, help="Fastboot.bin TODO")
-        parser.add_argument("--uboot-bin", type=str, required=True, help="Uboot.bib TODO")
+        pass
+        #parser.add_argument("--fastboot-bin", type=str, required=True, help="Fastboot.bin TODO")
+        #parser.add_argument("--uboot-bin", type=str, required=True, help="Uboot.bib TODO")
 
     def run(self, args):
         test="TODO"

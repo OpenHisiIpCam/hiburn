@@ -38,7 +38,7 @@ class UBootClient:
         return False
 
     def _read(self):
-        b = sels.s.read(1)
+        b = self.s.read(1)
         if b:
             logging.debug("<< {}".format(b))
         return b
@@ -86,7 +86,12 @@ class UBootClient:
         self.s.reset_input_buffer()
 
         while True:
-            self._read()
+            self._write(b'\xaa')
+            b = self._read()
+            if b == b'\x00':
+                print("00")
+            if b == b'\x20':
+                print("20")
 
 
     def write_command(self, cmd):

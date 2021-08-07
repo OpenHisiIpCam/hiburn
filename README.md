@@ -78,3 +78,47 @@ foo@bar:~/hiburn$ ./hiburn_app.py --serial /dev/ttyCAM1:115200 --net-device_ip 1
 - Existing commands write into your device's RAM only; its flash stays pristine. So the device won't turn into a brick if something goes wrong - just reset it.
 
 *The tool is written on Python and it should be easy to check sources and fix/modify it for your needs :smirk:*
+
+## Fastboot 
+
+Some hisi chips have ROM feature named *fastboot* (it is not related to Android`s fastboot).
+It is enabled in some boot flows and can be configured via boot pins. 
+Normal boot process can be interrupted and possible to communicate with ROM fw with simple command via UART0.
+
+Start frame
+* 1B magic/???
+* 2B sequence
+* 1B type
+* 4B size
+* 4B address
+* 2B crc
+
+Data frames
+* 1B magic/???
+* 2B sequence
+* NB data
+* 2B crc
+
+End frame
+* 1B magic/???
+* 2B sequence
+* 2B crc
+
+Each frame should be ACKed by ROM with 1B answer.
+
+Algo is following:
+1. Send some magic, TODO, not clear purpose, check chip`s reg manual
+2. Load SPL to SRAM
+3. Load Uboot (TPL only, without SPL) to RAM
+
+### TODO
+* step 1
+* adresses (seems should be must be consistent with uboot lds layout)
+* dump info for various chip
+* script for typical prebuilt uboot, that should extract spl, tpl.
+
+### References
+* HiTool application
+* hikey 960 util (find link)
+* https://github.com/TekuConcept/FastBurn
+* https://github.com/widgetii/burn

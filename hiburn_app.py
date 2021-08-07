@@ -74,10 +74,10 @@ def main():
     logging.basicConfig(level=(logging.DEBUG if args.verbose else logging.INFO))
     config = get_config_from_args(args, DEFAULT_CONFIG_DESC)
 
-    #if args.serial is not None:
-    #    client = UBootClient.create_with_serial(**args.serial)
-    #else:
-    #    client = UBootClient.create_with_serial_over_telnet(*args.serial_over_telnet)
+    if args.serial is not None:
+        client = UBootClient.create_with_serial(**args.serial)
+    else:
+        client = UBootClient.create_with_serial_over_telnet(*args.serial_over_telnet)
 
     if not args.no_fetch:
         reset_power(args.reset_cmd)
