@@ -66,21 +66,25 @@ def main():
         actions.download_sf,
         actions.upload,
         actions.upload_y,
-        actions.boot
+        actions.boot,
+        actions.fastboot
     )
 
     args = parser.parse_args()
     logging.basicConfig(level=(logging.DEBUG if args.verbose else logging.INFO))
     config = get_config_from_args(args, DEFAULT_CONFIG_DESC)
 
-    if args.serial is not None:
-        client = UBootClient.create_with_serial(**args.serial)
-    else:
-        client = UBootClient.create_with_serial_over_telnet(*args.serial_over_telnet)
+    #if args.serial is not None:
+    #    client = UBootClient.create_with_serial(**args.serial)
+    #else:
+    #    client = UBootClient.create_with_serial_over_telnet(*args.serial_over_telnet)
 
     if not args.no_fetch:
         reset_power(args.reset_cmd)
-        client.fetch_console()
+        if not args.action == actions.fastboot._run:
+            client.fetch_console()
+        else:
+            client.fetch_fastboot()
 
     if hasattr(args, "action"):
         args.action(client, config, args)

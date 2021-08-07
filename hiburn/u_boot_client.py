@@ -37,6 +37,12 @@ class UBootClient:
                 return True
         return False
 
+    def _read(self):
+        b = sels.s.read(1)
+        if b:
+            logging.debug("<< {}".format(b))
+        return b
+
     def _readline(self, raw=False):
         line = self.s.readline()
         if line:
@@ -72,6 +78,16 @@ class UBootClient:
                 break
 
         logging.info("U-Boot console is fetched")
+
+    def fetch_fastboot(self):
+        """ TODO
+        """
+
+        self.s.reset_input_buffer()
+
+        while True:
+            self._read()
+
 
     def write_command(self, cmd):
         self._write(cmd + "\n")

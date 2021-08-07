@@ -248,3 +248,15 @@ class upload_y(Action):
 
     def run(self, args):
         self.client.loady(b"bla bla bla!")
+
+# -------------------------------------------------------------------------------------------------
+class fastboot(Action):
+    """ TODO
+    """
+    @classmethod
+    def add_arguments(cls, parser):
+        parser.add_argument("--fastboot-bin", type=str, required=True, help="Fastboot.bin TODO")
+        parser.add_argument("--uboot-bin", type=str, required=True, help="Uboot.bib TODO")
+
+    def run(self, args):
+        test="TODO"
